@@ -1,0 +1,20 @@
+{
+  "name": "db-viewer-server",
+  "version": "1.0.0-a.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GetPsyched/db-viewer-server.git"
+  },
+  "keywords": [],
+  "author": "Priyanshu Tripathi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/GetPsyched/db-viewer-server/issues"
+  },
+  "homepage": "https://github.com/GetPsyched/db-viewer-server#readme"
+}
