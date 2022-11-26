@@ -2,10 +2,12 @@ import bodyParser from 'body-parser';
 import { body, validationResult } from 'express-validator';
 import express from 'express';
 import pg from 'pg';
+import cors from 'cors';
 
 const app = express();
 const port = process.env.PORT || 8080;
 
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.raw({ type: 'application/vnd.api+json' }));
