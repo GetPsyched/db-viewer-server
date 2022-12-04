@@ -39,18 +39,15 @@ app.get("/schema", async (req, res) => {
     `ordinal_position`;
   const rows: Array<InformationSchema> = (await client.query(query)).rows;
 
-  var nested_object: any = {};
+  const nested_object: any = {};
   rows.forEach((row: InformationSchema) => {
-    if (nested_object[row.database]) {
-      if (nested_object[row.database][row.table]) {
-        nested_object[row.database][row.table].push(row.column);
-      } else {
-        nested_object[row.database][row.table] = new Array(row.column);
-      }
-    } else {
+    if (!nested_object[row.database]) {
       nested_object[row.database] = {};
-      nested_object[row.database][row.table] = new Array(row.column);
     }
+    if (!nested_object[row.database][row.table]) {
+      nested_object[row.database][row.table] = [];
+    }
+    nested_object[row.database][row.table].push(row.column);
   });
 
   res.send(nested_object);
