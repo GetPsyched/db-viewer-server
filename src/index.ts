@@ -39,15 +39,36 @@ app.post("/schema", async (req, res) => {
     `ordinal_position`;
   const rows: Array<InformationSchema> = (await client.query(query)).rows;
 
-  const nested_object: any = {};
+  var nested_object: any = [];
   rows.forEach((row: InformationSchema) => {
-    if (!nested_object[row.database]) {
-      nested_object[row.database] = {};
+    const database = nested_object.find((object: any) => {
+      return object.name == row.database;
+    });
+    if (!database) {
+      nested_object.push({
+        name: row.database,
+        children: [
+          {
+            name: row.table,
+            children: [{ name: row.column }],
+          },
+        ],
+      });
+    } else {
+      const table = database.children.find((object: any) => {
+        return object.name == row.table;
+      });
+      if (!table) {
+        database.children.push({
+          name: row.table,
+          children: [{ name: row.column }],
+        });
+      } else {
+        table.children.push({
+          name: row.column,
+        });
+      }
     }
-    if (!nested_object[row.database][row.table]) {
-      nested_object[row.database][row.table] = [];
-    }
-    nested_object[row.database][row.table].push(row.column);
   });
 
   res.send(nested_object);
@@ -58,24 +79,24 @@ app.post(
   body("dsn").not().isEmpty(),
   body("query").matches(/^SELECT .+$/i),
   async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-
-  const dsn = req.body.dsn;
-  const query = req.body.query;
-
-  // Initialise and connect to the database
-  const client = new pg.Client({ connectionString: dsn });
-  client.connect((err) => {
-    if (err) {
-      res.status(400).json({ errors: { err } });
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
-  });
 
-  const { rows } = await client.query(query);
-  res.send(rows);
+    const dsn = req.body.dsn;
+    const query = req.body.query;
+
+    // Initialise and connect to the database
+    const client = new pg.Client({ connectionString: dsn });
+    client.connect((err) => {
+      if (err) {
+        res.status(400).json({ errors: { err } });
+      }
+    });
+
+    const { rows } = await client.query(query);
+    res.send(rows);
   }
 );
 
