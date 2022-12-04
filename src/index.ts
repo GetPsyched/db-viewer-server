@@ -17,7 +17,7 @@ type InformationSchema = {
   column: string;
 };
 
-app.get("/schema", async (req, res) => {
+app.post("/schema", async (req, res) => {
   // Initialise and connect to the database
   const client = new pg.Client({ connectionString: req.body.dsn });
   client.connect((err) => {
