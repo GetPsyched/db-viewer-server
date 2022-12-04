@@ -53,7 +53,11 @@ app.post("/schema", async (req, res) => {
   res.send(nested_object);
 });
 
-app.post("/", body("query").matches(/^SELECT .+$/i), async (req, res) => {
+app.post(
+  "/",
+  body("dsn").not().isEmpty(),
+  body("query").matches(/^SELECT .+$/i),
+  async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
@@ -72,7 +76,8 @@ app.post("/", body("query").matches(/^SELECT .+$/i), async (req, res) => {
 
   const { rows } = await client.query(query);
   res.send(rows);
-});
+  }
+);
 
 app.listen(port, () => {
   console.log(`db-viewer-server listening at http://localhost:${port}`);
